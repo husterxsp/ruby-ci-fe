@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/components/Login'
-import Index from '@/components/Index'
-import Admin from '@/components/Admin'
 import About from '@/components/About'
+import Admin from '@/components/Admin'
+import Index from '@/components/Index'
+import Login from '@/components/Login'
+import Profile from '@/components/Profile'
 import Project from '@/components/Project'
-import UserProfile from '@/components/UserProfile'
 
 Vue.use(Router)
 
@@ -18,32 +18,23 @@ export default new Router({
             redirect: 'login',
             children: [
                 {
-                    path: 'login',
+                    path: '/login',
                     component: Login
                 },
                 {
-                    path: 'profile',
-                    component: UserProfile,
-                    redirect: ':username',
-                    children: [
-                        {
-                            path: ':username',
-                            component: Project,
-                            children: [
-                                {
-                                    path: ':projectName',
-                                    component: Project
-                                }
-                            ]
-                        }
-                    ]
+                    path: '/profile/:id',
+                    component: Profile,
                 },
                 {
-                    path: 'admin',
+                    path: '/project/:id',
+                    component: Project,
+                },
+                {
+                    path: '/admin',
                     component: Admin
                 },
                 {
-                    path: 'about',
+                    path: '/about',
                     component: About
                 }
             ]

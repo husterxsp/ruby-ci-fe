@@ -3,7 +3,7 @@
 </style>
 <template>
     <div class="about">
-       About
+       面向Ruby项目的在线CI工具平台
     </div>
 </template>
 <script>

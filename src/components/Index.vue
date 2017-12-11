@@ -14,7 +14,6 @@
             li {
                 float: left;
                 line-height: 60px;
-
             }
         }
         .username {
@@ -33,7 +32,9 @@
     }
     .container {
         min-height: 100%;
-        width: 100%;
+        width: 80%;
+        min-width: 1000px;
+        margin: 30px auto;
     }
 </style>
 <template>
@@ -46,8 +47,8 @@
                 </li>
             </ul>
             <div class="username">
-                {{$route.params.username}}
-                <div class="logout" @click="logout" v-if="$route.params.username"> / 退出登录</div>
+                {{username}}
+                <div class="logout" @click="logout" v-if="username"> / 退出登录</div>
             </div>
         </div>
         <div class="container">
@@ -61,13 +62,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            username: ''
+            username: localStorage.username
         };
-    },
-    mounted: function () {
-
-        this.username =  this.$route.params.username;
-
     },
     methods: {
         logout() {
