@@ -4,21 +4,6 @@
     margin: 0 auto;
 }
 
-pre {
-    font-family: Monaco,monospace;
-    font-size: 12px;
-    line-height: 19px;
-    clear: left;
-    min-height: 42px;
-    margin-top: 0;
-    padding: 15px 0;
-    counter-reset: line-numbering;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    color: #f1f1f1;
-    background-color: #222;
-}
-
 </style>
 <template>
     <div class="profile">
