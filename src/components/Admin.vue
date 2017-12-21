@@ -51,7 +51,7 @@ export default {
             console.log(row);
         },
         getUsers() {
-            axios.post('/users/getusers')
+            axios.get('/users/getusers')
             .then(function (res) {
                 if (res.status == 0) {
                     this.$message.error(res.message);

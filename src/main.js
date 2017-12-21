@@ -19,6 +19,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+import Qs from 'qs'
+
 
 import hljs from 'highlight.js'
 import 'highlight.js/styles/googlecode.css' //样式文件
@@ -31,13 +33,23 @@ Vue.directive('highlight',function (el) {
 })
 
 
+var axios_instance = axios.create({
+    transformRequest: [function (data) {
+        data = Qs.stringify(data);
+        return data;
+    }],
+    headers:{'Content-Type':'application/x-www-form-urlencoded'}
+})
+Vue.use(VueAxios, axios_instance)
+
+
 Vue.use(VueMomentJS, moment);
 
 // Vue.use(VueHighlightJS)
 
 Vue.use(ElementUI)
 
-Vue.use(VueAxios, axios)
+// Vue.use(VueAxios, axios)
 
 Vue.config.productionTip = false
 

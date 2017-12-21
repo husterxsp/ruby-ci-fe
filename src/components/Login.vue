@@ -25,6 +25,7 @@
 </template>
 <script>
 import axios from 'axios';
+import Qs from 'qs';
 
 export default {
     data() {
@@ -68,30 +69,35 @@ export default {
     methods: {
         login(loginForm) {
 
+            var _this = this;
             this.$refs[loginForm].validate((valid) => {
                 if (valid) {
 
-                    axios.post('/users/login', {
+                    var data = Qs.stringify( {
                         username: this.loginForm.name,
                         password: this.loginForm.pass
+                    });                    
+
+                    axios.post('http://127.0.0.1:3000/users/login', data, {
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     })
                     .then(function (res) {
                         if (res.status == 0) {
                             this.$message.error(res.message);
                         }
                         else {
-                            this.$message({
+                            _this.$message({
                                 message: '登录成功',
                                 type: 'success'
                             });
                             
-                            localStorage.username = this.loginForm.name;
+                            localStorage.username = _this.loginForm.name;
                             if (res.admin) {
                                 localStorage.admin = 1;
-                                this.$router.push({ path: '/admin' });
+                                _this.$router.push({ path: '/admin' });
                             }                            
                             else {
-                                this.$router.push({ path: '/profile/:' + username });
+                                _this.$router.push({ path: '/profile/:' + localStorage.username });
                             }
                         }
                     });
@@ -100,24 +106,29 @@ export default {
             });
         },
         register(loginForm) {
+            var _this = this;
             this.$refs[loginForm].validate((valid) => {
                 if (valid) {
 
-                    axios.post('users/regist', {
-                        username: this.loginForm.name,
-                        password: this.loginForm.pass
+                    var data = Qs.stringify( {
+                        username: _this.loginForm.name,
+                        password: _this.loginForm.pass
+                    });
+                    
+                    axios.post('http://127.0.0.1:3000/users/regist', data, {
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                     })
                     .then(function (res) {
                         if (res.status == 0) {
-                            this.$message.error(res.message);
+                            _this.$message.error(res.message);
                         }
                         else {
-                            this.$message({
+                            _this.$message({
                                 message: '注册成功',
                                 type: 'success'
                             });
 
-                            this.$router.push({ path: '/login' });
+                            _this.$router.push({ path: '/login' });
 
                         }
                     });

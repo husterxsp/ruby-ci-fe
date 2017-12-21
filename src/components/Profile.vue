@@ -34,6 +34,7 @@
 </template>
 <script>
 import axios from 'axios';
+import Qs from 'qs';
 
 export default {
     data() {
@@ -43,6 +44,7 @@ export default {
         this.getProjects();
 
         return {
+            username: localStorage.username,
             activeIndex: '1',
             projectList: [
                 {
@@ -66,58 +68,65 @@ export default {
             this.$router.push({ path: '/project/' + row.projectName });
         },
         getProjects() {
-            axios.post('/users/getprojects', {
-                username: this.username
+            var _this = this;
+            var username = localStorage.username;
+
+            axios.get('http://127.0.0.1:3000/users/getprojects', { params: {
+                    username: localStorage.username
+                }
             })
             .then(function (res) {
-                this.projectList = res.project_list;
+                _this.projectList = res.data.project_list || [];
             });
 
-            for (item in this.projectList.build_list) {
-                item.time = this.$moment.endOf(item.time).fromNow();
-            }
-            console.log(this.projectList);
+            // for (item in _this.projectList.build_list) {
+            //     item.time = _this.$moment.endOf(item.time).fromNow();
+            // }
         },
         addProject() {
-            this.$prompt('请输入GitHub项目地址', '提示', {
+            var _this = this;
+
+            _this.$prompt('请输入GitHub项目地址', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                inputPattern: /https:\/\/github.com\/\w+\/\w+/,
+                inputPattern: /https:\/\/github.com\/\w+\/([\w\-\_]+)/,
                 inputErrorMessage: '项目地址格式不正确'
             }).then(({ value }) => {
-                this.$message({
-                    type: 'success',
-                    message: '你的GitHub项目地址是: ' + value
-                });
 
                 // 此处加验证github url
-                
-                axios.post('/users/addProject', {
-                    username: this.username,
-                    project_name: /^https:\/\/github.com\/\w+\/(\w+)$/.exec(value)[1],
+ 
+                var data = Qs.stringify({
+                    username: localStorage.username,
+                    project_name: /https:\/\/github.com\/\w+\/([\w\_\-]+)/.exec(value)[1],
                     project_url: value
+                });
+
+                console.log(data);
+
+                axios.post('http://127.0.0.1:3000/users/addproject', data, {
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 })
                 .then(function (res) {
                     if (res.status == 0) {
-                        this.$message.error(res.message);
+                        _this.$message.error(res.message);
                     }
                     else {
-                        this.$message({
+                        _this.$message({
                             message: '添加成功',
                             type: 'success'
                         });
-                        this.getProjects();
+                        _this.getProjects();
                     }
                 });
 
-                $(this.$refs.list.$el).click();
+                $(_this.$refs.list.$el).click();
             }).catch(() => {
-                this.$message({
+                _this.$message({
                     type: 'info',
                     message: '取消输入'
                 });
 
-                $(this.$refs.list.$el).click();
+                $(_this.$refs.list.$el).click();
             });
 
         }

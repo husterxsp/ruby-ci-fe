@@ -50,6 +50,7 @@ import axios from 'axios';
 
 export default {
     data() {
+        this.getBuildInfo();
         this.$moment.locale('zh-cn');
 
         return {
@@ -78,6 +79,22 @@ export default {
         };
     },
     methods: {
+        getBuildInfo() {
+            var username = localStorage.username;
+            var projectName = this.projectName || 'test';
+            console.log(projectName);
+
+            axios.get('/users/getprojects', { params: {
+                    user_name: localStorage.username,
+                    projectName: projectName,
+                    user_type: '0'
+                }
+            })
+            .then(function (res) {
+                console.log(res);
+                this.projectList = res.project_list;
+            });
+        },
         reviewLog(row) {
             this.log = row.log;
 
