@@ -40,7 +40,7 @@ export default {
 
         this.$moment.locale('zh-cn');
 
-        this.fetch();
+        this.getProjects();
 
         return {
             activeIndex: '1',
@@ -65,18 +65,18 @@ export default {
         reviewProject(row) {
             this.$router.push({ path: '/project/' + row.projectName });
         },
-        fetch() {
-            // axios.post('/user/profile', {
-            //     username: this.username
-            // })
-            // .then(function (res) {
-            //     this.projectList = res.project_list;
-            // });
+        getProjects() {
+            axios.post('/users/getprojects', {
+                username: this.username
+            })
+            .then(function (res) {
+                this.projectList = res.project_list;
+            });
 
-            // for (item in this.projectList.build_list) {
-            //     item.time = this.$moment.endOf(item.time).fromNow();
-            // }
-            // console.log(this.projectList);
+            for (item in this.projectList.build_list) {
+                item.time = this.$moment.endOf(item.time).fromNow();
+            }
+            console.log(this.projectList);
         },
         addProject() {
             this.$prompt('请输入GitHub项目地址', '提示', {
@@ -90,12 +90,15 @@ export default {
                     message: '你的GitHub项目地址是: ' + value
                 });
 
-                axios.post('/user/add_project', {
+                // 此处加验证github url
+                
+                axios.post('/users/addProject', {
                     username: this.username,
+                    project_name: /^https:\/\/github.com\/\w+\/(\w+)$/.exec(value)[1],
+                    project_url: value
                 })
                 .then(function (res) {
                     if (res.status == 0) {
-                        // todo 后端校验项目地址
                         this.$message.error(res.message);
                     }
                     else {
@@ -103,8 +106,7 @@ export default {
                             message: '添加成功',
                             type: 'success'
                         });
-
-                        // 此处返回新的项目列表
+                        this.getProjects();
                     }
                 });
 

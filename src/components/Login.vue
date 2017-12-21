@@ -28,6 +28,7 @@ import axios from 'axios';
 
 export default {
     data() {
+
         // 判断已登录跳转首页
         var username = localStorage.username;
         if (username) {
@@ -70,7 +71,7 @@ export default {
             this.$refs[loginForm].validate((valid) => {
                 if (valid) {
 
-                    axios.post('/user/signin', {
+                    axios.post('/users/login', {
                         username: this.loginForm.name,
                         password: this.loginForm.pass
                     })
@@ -102,7 +103,7 @@ export default {
             this.$refs[loginForm].validate((valid) => {
                 if (valid) {
 
-                    axios.post('/user/signup', {
+                    axios.post('users/regist', {
                         username: this.loginForm.name,
                         password: this.loginForm.pass
                     })
