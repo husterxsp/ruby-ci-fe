@@ -22,10 +22,16 @@ pre {
         <div class="line"></div>
 
         <el-table :data="buildList" stripe style="width: 100%" >
-            <el-table-column prop="branch" label="branch" width="120"></el-table-column>
+<!--             <el-table-column prop="branch" label="branch" width="120"></el-table-column>
             <el-table-column prop="commit" label="commit" min-width="120"></el-table-column>
             <el-table-column prop="status" label="status" width="100"></el-table-column>
-            <el-table-column prop="time" label="time" width="220"></el-table-column>
+            <el-table-column prop="time" label="time" width="220"></el-table-column> -->
+            <el-table-column prop="branch" label="branch"></el-table-column>
+            <el-table-column prop="commit_url"  show-overflow-tooltip="true" label="commit" >
+                <a href="test">test</a>
+            </el-table-column>
+            <el-table-column prop="status" label="status"></el-table-column>
+            <el-table-column prop="build_time" label="time"></el-table-column>
             <el-table-column
                 fixed="right"
                 label="操作"
@@ -55,44 +61,28 @@ export default {
 
         return {
             activeIndex: '1',
-            projectName: this.$route.params.id,
+            projectName: '',
             log: '✘ 71 problems (71 errors, 0 warnings)',
             dialogVisible: false,
-            buildList: [
-                {
-                    author: 'husterxsp',
-                    branch: 'master',
-                    commit: '0a6b3fca32ea16814ccf871ef764f23b5eda3c57',
-                    status: 0,
-                    log: 'var a = 1;console.log(aaa);',
-                    time: this.$moment(1512995343714).fromNow()
-                },
-                {
-                    author: 'husterxsp',
-                    branch: 'master',
-                    commit: '0a6b3fca32ea16814ccf871ef764f23b5eda3c57',
-                    status: 0,
-                    log: '✘ 71 problems (71 errors, 0 warnings)',
-                    time: this.$moment(1512295343714).fromNow()
-                }
-            ]
+            buildList: []
         };
     },
     methods: {
         getBuildInfo() {
+            var _this = this;
             var username = localStorage.username;
-            var projectName = this.projectName || 'test';
-            console.log(projectName);
+            _this.projectName = this.$route.params.id;
 
-            axios.get('/users/getprojects', { params: {
-                    user_name: localStorage.username,
-                    projectName: projectName,
-                    user_type: '0'
+            console.log(username);
+
+            axios.get('https://limiao-limiao.c9users.io/buildinfos/getBuildInfo', { params: {
+                    'user_name': username,
+                    'projectName': _this.projectName,
+                    'user_type': '0'
                 }
             })
             .then(function (res) {
-                console.log(res);
-                this.projectList = res.project_list;
+                _this.buildList = res.data.buildinfoList || [];
             });
         },
         reviewLog(row) {

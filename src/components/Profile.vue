@@ -14,8 +14,8 @@
         <div class="line"></div>
 
         <el-table :data="projectList" stripe style="width: 100%" >
-            <el-table-column prop="projectName" label="项目名称" ></el-table-column>
-            <el-table-column prop="buildNum" label="构建次数" ></el-table-column>
+            <el-table-column prop="project_name" label="项目名称" ></el-table-column>
+            <el-table-column prop="buildinfo_num" label="构建次数" ></el-table-column>
             <el-table-column prop="author" label="所有者" ></el-table-column>
             <el-table-column
                 fixed="right"
@@ -24,7 +24,7 @@
                 <template slot-scope="scope">
                     <el-button @click="reviewProject(scope.row)" type="text" size="small">查看</el-button>                    
                     <el-button
-                        @click.native.prevent="deletePeoject(scope.$index, projectList)" type="text" size="small">
+                        @click.native.prevent="delProject(scope.row)" type="text" size="small">
                         移除
                     </el-button>
                 </template>
@@ -41,23 +41,14 @@ export default {
 
         this.$moment.locale('zh-cn');
 
+
         this.getProjects();
 
         return {
-            username: localStorage.username,
+            user_name: localStorage.user_name || '',
+            admin_name: localStorage.admin_name || '',
             activeIndex: '1',
-            projectList: [
-                {
-                    projectName: 'project-1',
-                    buildNum: '1',
-                    author: 'author-1'
-                },
-                {
-                    projectName: 'project-2',
-                    buildNum: '3',
-                    author: 'author-2'
-                }
-            ]
+            projectList: []
         }
     },
     methods: {
@@ -65,23 +56,46 @@ export default {
             console.log(index, row);
         },
         reviewProject(row) {
-            this.$router.push({ path: '/project/' + row.projectName });
+            this.$router.push({ path: '/project/' + row.project_name });
         },
         getProjects() {
             var _this = this;
             var username = localStorage.username;
 
-            axios.get('http://127.0.0.1:3000/users/getprojects', { params: {
-                    username: localStorage.username
+            axios.get('https://limiao-limiao.c9users.io/projects/getprojects', {params: {
+                    username: username
                 }
             })
             .then(function (res) {
-                _this.projectList = res.data.project_list || [];
+
+                _this.projectList = res.data.projectList || [];
+
             });
 
             // for (item in _this.projectList.build_list) {
             //     item.time = _this.$moment.endOf(item.time).fromNow();
             // }
+        },
+        delProject(row) {
+            var _this = this;
+            var username = localStorage.username;
+
+            var data = Qs.stringify({
+                user_name: username,
+                project_name: row.project_name
+            });
+
+            axios.post('https://limiao-limiao.c9users.io/projects/delproject', data)
+            .then(function (res) {
+                if (res.data.status == 1) {
+                    _this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+
+                    _this.projectList.splice(row.index, 1);                    
+                }
+            });
         },
         addProject() {
             var _this = this;
@@ -97,13 +111,12 @@ export default {
  
                 var data = Qs.stringify({
                     username: localStorage.username,
-                    project_name: /https:\/\/github.com\/\w+\/([\w\_\-]+)/.exec(value)[1],
+                    author: /https:\/\/github.com\/(\w+)\/([\w\_\-]+)/.exec(value)[1],
+                    project_name: /https:\/\/github.com\/(\w+)\/([\w\_\-]+)/.exec(value)[2],
                     project_url: value
                 });
 
-                console.log(data);
-
-                axios.post('http://127.0.0.1:3000/users/addproject', data, {
+                axios.post('https://limiao-limiao.c9users.io/projects/addproject', data, {
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 })
                 .then(function (res) {

@@ -5,9 +5,9 @@
 <template>
     <div class="admin">
         <el-table :data="userList" stripe style="width: 100%" >
-            <el-table-column prop="username" label="用户名" ></el-table-column>
-            <el-table-column prop="projectNum" label="项目数" ></el-table-column>
-            <el-table-column prop="lastLogin" label="最近登录" ></el-table-column>
+            <el-table-column prop="user_name" label="用户名" ></el-table-column>
+            <el-table-column prop="projects_num || 0" label="项目数" ></el-table-column>
+            <el-table-column prop="last_login" label="最近登录" ></el-table-column>
             <el-table-column
                 fixed="right"
                 label="操作"
@@ -28,39 +28,43 @@ import axios from 'axios';
 
 export default {
     data() {
+        this.$moment.locale('zh-cn');
+
+        this.getUsers();
         return {
-            userList: [
-                {
-                    username: '张三',
-                    projectNum: 3,
-                    lastLogin: this.$moment(1511996115485).fromNow()
-                },
-                {
-                    username: '李四',
-                    projectNum: 2,
-                    lastLogin: this.$moment(1512296115485).fromNow()
-                }
-            ]
+            userList: []
         }
     },
     methods: {
         reviewUser(row) {
-            this.$router.push({ path: '/profile/' + row.username});
+            localStorage.username = row.user_name;
+            this.$router.push({ path: '/profile/' + row.user_name});
         },
         deleteUser(row) {
             console.log(row);
         },
         getUsers() {
-            axios.get('/users/getusers')
+            var _this = this;
+            axios.get('https://limiao-limiao.c9users.io/users/getusers')
             .then(function (res) {
-                if (res.status == 0) {
-                    this.$message.error(res.message);
+                if (res.data.status == 0) {
+                    this.$message.error(res.data.message);
                 }
                 else {
-                    console.log(res);
+                    _this.userList = res.data.userList || [];
+                    
+                    _this.udpateTime();
                 }
+
             });
+        },
+        udpateTime() {
+            for (var i = 0; i < this.userList.length; i++) {
+                var time = +new Date(this.userList[i].last_login);
+                this.userList[i].last_login = this.$moment(time).endOf().fromNow();
+            }
         }
+
     }
 }
 </script>

@@ -62,7 +62,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            username: localStorage.username
+            username: localStorage.adminname || localStorage.username
         };
     },
     methods: {
