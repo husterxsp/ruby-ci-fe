@@ -30,7 +30,7 @@ pre {
             <el-table-column prop="commit_url"  show-overflow-tooltip="true" label="commit" >
                 <a href="test">test</a>
             </el-table-column>
-            <el-table-column prop="status" label="status"></el-table-column>
+            <el-table-column prop="build_status" label="status"></el-table-column>
             <el-table-column prop="build_time" label="time"></el-table-column>
             <el-table-column
                 fixed="right"
@@ -53,6 +53,9 @@ pre {
 </template>
 <script>
 import axios from 'axios';
+import {getCookie} from '../lib/util.js';
+
+import _global from '../config';
 
 export default {
     data() {
@@ -62,7 +65,8 @@ export default {
         return {
             activeIndex: '1',
             projectName: '',
-            log: '✘ 71 problems (71 errors, 0 warnings)',
+            author: '',
+            log: '✘ 71 \n problems \n (71 errors, 0 warnings)',
             dialogVisible: false,
             buildList: []
         };
@@ -70,25 +74,35 @@ export default {
     methods: {
         getBuildInfo() {
             var _this = this;
-            var username = localStorage.username;
-            _this.projectName = this.$route.params.id;
+            var username = sessionStorage.username;
+            
+            _this.projectName = this.$route.params.project;
+            _this.author = this.$route.params.author;
 
-            console.log(username);
 
-            axios.get('https://limiao-limiao.c9users.io/buildinfos/getBuildInfo', { params: {
+            axios.get(_global.host + '/buildinfos/getBuildInfo', { params: {
+                    'author': _this.author,
                     'user_name': username,
-                    'projectName': _this.projectName,
+                    'project_name': _this.projectName,
                     'user_type': '0'
                 }
             })
             .then(function (res) {
                 _this.buildList = res.data.buildinfoList || [];
+
+                _this.udpateTime(); 
             });
         },
         reviewLog(row) {
-            this.log = row.log;
+            // this.log = row.loginfo;
 
             this.dialogVisible = true;
+        },
+        udpateTime() {
+            for (var i = 0; i < this.buildList.length; i++) {
+                var time = +new Date(this.buildList[i].build_time);
+                this.buildList[i].build_time = this.$moment(time).endOf().fromNow();
+            }
         }
     }
 }

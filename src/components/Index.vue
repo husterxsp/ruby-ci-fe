@@ -20,9 +20,13 @@
             float: right;
             line-height: 60px;
             padding: 0 20px;
-            .logout {
-                display: inline-block;
-                cursor: pointer;
+            .avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                overflow: hidden;
+                vertical-align: top;
+                margin-top: 5px;
             }
         }
     }
@@ -34,7 +38,9 @@
         min-height: 100%;
         width: 80%;
         min-width: 1000px;
-        margin: 30px auto;
+        margin: 0 auto;
+        padding: 30px 0;
+        box-sizing: border-box;
     }
 </style>
 <template>
@@ -46,9 +52,13 @@
                     <router-link to="/about">关于</router-link>
                 </li>
             </ul>
-            <div class="username">
+            <div class="username" v-if="admin">
+                admin
+                <img src="../assets/avatar.png" class="avatar" />
+            </div>
+            <div class="username" v-else>
                 {{username}}
-                <div class="logout" @click="logout" v-if="username"> / 退出登录</div>
+                <img v-bind:src="imgurl" class="avatar" />
             </div>
         </div>
         <div class="container">
@@ -62,16 +72,14 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            username: localStorage.adminname || localStorage.username
+            username: sessionStorage.username,
+            imgurl: sessionStorage.imgurl,
+            admin: sessionStorage.admin
         };
     },
     methods: {
-        logout() {
-            localStorage.clear();
-            this.username = '';
 
-            this.$router.push({ path: '/login' });
-        }
+        
     }
 }
 </script>
