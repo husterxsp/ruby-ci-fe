@@ -3,10 +3,15 @@
     position: relative;
     margin: 0 auto;
 }
-
+.el-breadcrumb {
+    margin: 0 20px 10px
+}
 </style>
 <template>
     <div class="profile">
+        <el-breadcrumb separator="/" v-if='admin'>
+            <el-breadcrumb-item :to="{ path: '/profile/' + username }"> 当前查看用户：{{username}}</el-breadcrumb-item>
+        </el-breadcrumb>
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
             <el-menu-item index="1" ref="list">项目列表</el-menu-item>
             <el-menu-item index="2" @click="addProject">添加项目</el-menu-item>
@@ -35,22 +40,22 @@
 <script>
 import axios from 'axios';
 import Qs from 'qs';
-import {getCookie, setCookie} from '../lib/util.js';
 
 import _global from '../config';
 
 export default {
     data() {
-        this.$moment.locale('zh-cn');
-
-        this.getProjects();
-
         return {
             username: sessionStorage.username,
             admin: sessionStorage.admin,
             activeIndex: '1',
             projectList: []
         }
+    },
+    created() {
+        this.$moment.locale('zh-cn');
+
+        this.getProjects();
     },
     methods: {
         deleteRow(index, row) {
@@ -61,10 +66,9 @@ export default {
         },
         getProjects() {
             var _this = this;
-            var username = getCookie('username');
 
             axios.get(_global.host + '/projects/getprojects', {params: {
-                    username: username
+                    username: _this.username
                 }
             })
             .then(function (res) {
@@ -100,19 +104,20 @@ export default {
         },
         addProject() {
             var _this = this;
+            var githubReg = /https:\/\/github.com\/[\w\-\_\.]+\/([\w\-\_\.]+)/;
 
             _this.$prompt('请输入GitHub项目URL', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                inputPattern: /https:\/\/github.com\/[\w\-\_\.]+\/([\w\-\_\.]+)/,
+                inputPattern: githubReg,
                 inputErrorMessage: '项目地址格式不正确'
             }).then(({ value }) => {
 
                 // 此处加验证github url
                 var data = Qs.stringify({
                     username: _this.username,
-                    author: /https:\/\/github.com\/(\w+)\/([\w\_\-]+)/.exec(value)[1],
-                    project_name: /https:\/\/github.com\/(\w+)\/([\w\_\-]+)/.exec(value)[2],
+                    author: githubReg.exec(value)[1],
+                    project_name: githubReg.exec(value)[2],
                     project_url: value
                 });
 
@@ -120,7 +125,6 @@ export default {
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 })
                 .then(function (res) {
-                    console.log(res);
                     if (res.data.status == 0) {
                         _this.$message.error(res.data.message);
                     }
@@ -133,14 +137,14 @@ export default {
                     }
                 });
 
-                // $(_this.$refs.list.$el).click();
+                _this.$refs.list.$el.click();
             }).catch(() => {
                 _this.$message({
                     type: 'info',
                     message: '取消输入'
                 });
 
-                // $(_this.$refs.list.$el).click();
+                _this.$refs.list.$el.click();
             });
 
         }

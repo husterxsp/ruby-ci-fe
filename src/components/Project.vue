@@ -13,11 +13,16 @@ pre {
     counter-reset: line-numbering;
     margin-top: 0;
 }
+
 </style>
 <template>
     <div class="project">
+        <el-breadcrumb separator="/" v-if='admin'>
+            <el-breadcrumb-item :to="{ path: '/profile/' + username }"> 当前查看用户：{{username}}</el-breadcrumb-item>
+        </el-breadcrumb>
+
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
-            <el-menu-item index="1">{{projectName}} 构建列表</el-menu-item>
+            <el-menu-item index="1">{{author}} / {{projectName}} 项目构建列表</el-menu-item>
         </el-menu>
         <div class="line"></div>
 
@@ -53,36 +58,34 @@ pre {
 </template>
 <script>
 import axios from 'axios';
-import {getCookie} from '../lib/util.js';
 
 import _global from '../config';
 
 export default {
     data() {
-        this.getBuildInfo();
-        this.$moment.locale('zh-cn');
-
         return {
+            username: sessionStorage.username,
+            admin: sessionStorage.admin,
+            projectName: this.$route.params.project,
+            author: this.$route.params.author,
             activeIndex: '1',
-            projectName: '',
-            author: '',
-            log: '✘ 71 \n problems \n (71 errors, 0 warnings)',
+            log: '',
             dialogVisible: false,
             buildList: []
         };
     },
+    created() {
+        this.$moment.locale('zh-cn');
+
+        this.getBuildInfo();
+    },
     methods: {
         getBuildInfo() {
             var _this = this;
-            var username = sessionStorage.username;
-            
-            _this.projectName = this.$route.params.project;
-            _this.author = this.$route.params.author;
-
 
             axios.get(_global.host + '/buildinfos/getBuildInfo', { params: {
                     'author': _this.author,
-                    'user_name': username,
+                    'user_name': _this.username,
                     'project_name': _this.projectName,
                     'user_type': '0'
                 }
@@ -94,8 +97,7 @@ export default {
             });
         },
         reviewLog(row) {
-            // this.log = row.loginfo;
-
+            this.log = row.loginfo;
             this.dialogVisible = true;
         },
         udpateTime() {

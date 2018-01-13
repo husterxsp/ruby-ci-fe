@@ -92,7 +92,8 @@ export default {
     },
     methods: {
         reviewUser(row) {
-            setCookie('username', row.user_name);
+            sessionStorage.username = row.user_name;
+
             this.$router.push({ path: '/profile/' + row.user_name});
         },
         deleteUser(row) {
@@ -145,6 +146,8 @@ export default {
                             sessionStorage.admin = 1;
 
                             this.admin = 1;
+
+                            this.$emit('sendData', sessionStorage);
 
                             _this.getUsers();
                         }

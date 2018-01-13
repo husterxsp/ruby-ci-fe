@@ -42,6 +42,10 @@
         padding: 30px 0;
         box-sizing: border-box;
     }
+    
+    .el-breadcrumb {
+        margin: 0 20px 10px
+    }
 </style>
 <template>
     <div class="index">
@@ -56,13 +60,13 @@
                 admin
                 <img src="../assets/avatar.png" class="avatar" />
             </div>
-            <div class="username" v-else>
+            <div class="username" v-else-if="username">
                 {{username}}
                 <img v-bind:src="imgurl" class="avatar" />
             </div>
         </div>
         <div class="container">
-            <router-view></router-view>
+            <router-view v-on:sendData='updateData'></router-view>
         </div>
     </div>
 </template>
@@ -78,7 +82,11 @@ export default {
         };
     },
     methods: {
-
+        updateData (newData) {
+            this.username = newData.username;
+            this.imgurl = newData.imgurl;
+            this.admin = newData.admin;
+        }
         
     }
 }

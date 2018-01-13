@@ -22,11 +22,11 @@ export default {
         var imgurl = profile[1];
         var admin = getCookie('admin');
 
-
         sessionStorage.imgurl = imgurl;
         sessionStorage.username = username;
         sessionStorage.admin = admin;
 
+        this.$emit('sendData', sessionStorage);
 
         if (admin) this.$router.push({path: '/admin'});
         else if (username) this.$router.push({path: '/profile/' + username});
