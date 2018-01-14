@@ -104,7 +104,7 @@ export default {
         },
         addProject() {
             var _this = this;
-            var githubReg = /https:\/\/github.com\/[\w\-\_\.]+\/([\w\-\_\.]+)/;
+            var githubReg = /https:\/\/github.com\/([\w\-\_\.]+)\/([\w\-\_\.]+)/;
 
             _this.$prompt('请输入GitHub项目URL', '提示', {
                 confirmButtonText: '确定',

@@ -104,7 +104,7 @@ export default {
             axios.get(_global.host + '/users/getusers')
             .then(function (res) {
                 if (res.data.status == 0) {
-                    this.$message.error(res.data.message);
+                    _this.$message.error(res.data.message);
                 }
                 else {
                     _this.userList = res.data.userList || [];
@@ -126,8 +126,8 @@ export default {
                 if (valid) {
 
                     var data = Qs.stringify( {
-                        username: this.loginForm.name,
-                        password: this.loginForm.pass
+                        username: _this.loginForm.name,
+                        password: _this.loginForm.pass
                     });                    
 
                     axios.post(_global.host + '/users/login', data, {
@@ -145,9 +145,9 @@ export default {
 
                             sessionStorage.admin = 1;
 
-                            this.admin = 1;
+                            _this.admin = 1;
 
-                            this.$emit('sendData', sessionStorage);
+                            _this.$emit('sendData', sessionStorage);
 
                             _this.getUsers();
                         }
