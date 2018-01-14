@@ -72,6 +72,7 @@
 </template>
 <script>
 import axios from 'axios';
+import {getCookie} from '../lib/util.js';
 
 export default {
     data() {
@@ -81,13 +82,36 @@ export default {
             admin: sessionStorage.admin
         };
     },
+    created() {
+        this.redirect();
+
+        var profile = getCookie('profile');
+
+        if (!profile) this.$router.push({path: '/login'});
+
+        profile = profile.split('&imgurl=');
+
+        var username = profile[0];
+        var imgurl = profile[1];
+        var admin = getCookie('admin');
+
+        sessionStorage.imgurl = imgurl;
+        sessionStorage.username = username;
+        sessionStorage.admin = admin;
+
+        this.redirect();
+    },
+
     methods: {
+        redirect() {
+            if (this.admin) this.$router.push({path: '/admin'});
+            else if (this.username) this.$router.push({path: '/profile/' + this.username});
+        },
         updateData (newData) {
             this.username = newData.username;
             this.imgurl = newData.imgurl;
             this.admin = newData.admin;
         }
-        
     }
 }
 </script>

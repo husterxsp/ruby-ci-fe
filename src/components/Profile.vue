@@ -53,6 +53,8 @@ export default {
         }
     },
     created() {
+        if (!this.username) this.$router.push({path: '/'});
+
         this.$moment.locale('zh-cn');
 
         this.getProjects();
