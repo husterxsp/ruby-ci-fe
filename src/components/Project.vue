@@ -32,10 +32,9 @@ pre {
             <el-table-column prop="status" label="status" width="100"></el-table-column>
             <el-table-column prop="time" label="time" width="220"></el-table-column> -->
             <el-table-column prop="branch" label="branch"></el-table-column>
-            <el-table-column prop="commit_url"  show-overflow-tooltip="true" label="commit" >
-                <a href="test">test</a>
+            <el-table-column prop="commit_id"  show-overflow-tooltip="true" label="commit" >
             </el-table-column>
-            <el-table-column prop="build_status" label="status"></el-table-column>
+            <el-table-column prop="commmit_msg" label="message"></el-table-column>
             <el-table-column prop="build_time" label="time"></el-table-column>
             <el-table-column
                 fixed="right"
@@ -47,12 +46,8 @@ pre {
             </el-table-column>
         </el-table>
 
-        <el-dialog title="Log信息" :visible.sync="dialogVisible">
-            <pre>
-                <code>
-                {{log}}
-                </code>
-            </pre>
+        <el-dialog  width="70%" title="Log信息" :visible.sync="dialogVisible">
+            <pre><code>{{log}}</code></pre>
         </el-dialog>
     </div>
 </template>
@@ -95,17 +90,21 @@ export default {
             .then(function (res) {
                 _this.buildList = res.data.buildinfoList || [];
 
-                _this.udpateTime(); 
+                _this.udpate(); 
             });
         },
         reviewLog(row) {
             this.log = row.loginfo;
             this.dialogVisible = true;
         },
-        udpateTime() {
+        udpate() {
+            // 更新时间
             for (var i = 0; i < this.buildList.length; i++) {
                 var time = +new Date(this.buildList[i].build_time);
                 this.buildList[i].build_time = this.$moment(time).endOf().fromNow();
+            }
+            for (var i = 0; i < this.buildList.length; i++) {
+                this.buildList[i]['commit_id'] = this.buildList[i]['commit_url'].substr(-40);
             }
         }
     }

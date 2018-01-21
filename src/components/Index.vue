@@ -99,6 +99,10 @@ export default {
         sessionStorage.username = username;
         sessionStorage.admin = admin;
 
+        this.imgurl = imgurl;
+        this.username = username;
+        this.admin = admin;
+
         this.redirect();
     },
 
