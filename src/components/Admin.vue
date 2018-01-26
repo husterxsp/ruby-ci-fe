@@ -144,6 +144,7 @@ export default {
                             });
 
                             sessionStorage.admin = 1;
+                            setCookie('admin', 1);
 
                             _this.admin = 1;
 

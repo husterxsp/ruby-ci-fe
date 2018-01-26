@@ -1,35 +1,5 @@
-<style lang="less" scoped>
-    .header {
-        height: 60px;
-        background-color: #f1f1f1;
-        padding: 0 20px;
-        .logo {
-            line-height: 60px;
-            float: left;
-            cursor: pointer;
-        }
-        ul {
-            margin-left: 30px;
-            float: left;
-            li {
-                float: left;
-                line-height: 60px;
-            }
-        }
-        .username {
-            float: right;
-            line-height: 60px;
-            padding: 0 20px;
-            .avatar {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                overflow: hidden;
-                vertical-align: top;
-                margin-top: 5px;
-            }
-        }
-    }
+<style lang="less">
+    @import '../assets/css/fontello.css';
     .index {
         height: 100%;
         width: 100%;
@@ -46,23 +16,86 @@
     .el-breadcrumb {
         margin: 0 20px 10px
     }
+    .header {
+        height: 60px;
+        background-color: #f1f1f1;
+        padding: 0 50px;
+        .logo {
+            line-height: 60px;
+            float: left;
+            cursor: pointer;
+        }
+        ul {
+            margin-left: 30px;
+            float: left;
+            li {
+                float: left;
+                line-height: 60px;
+            }
+        }
+    }
+    .menu-left {
+        li {
+            padding: 0 10px;
+        }
+    }
+    .menu-right {
+        float: right;
+        .admin {
+            display: inline-block;
+            line-height: 60px;
+            padding: 0 10px;            
+            font-size: 25px;
+
+        }
+        .user {
+            display: inline-block;
+            line-height: 60px;
+            padding: 0 10px;
+            .avatar {
+                position: relative;
+                display: inline-block;
+                img {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    vertical-align: top;
+                    margin-top: 10px;
+                }
+            }
+        }
+        .lagout {
+            font-size: 20px;
+            line-height: 60px;
+        }
+    }
+    a:hover {
+        text-decoration: underline;
+    }
 </style>
 <template>
     <div class="index">
         <div class="header">
             <h1 class="logo"><a href="/">Ruby-CI</a></h1>
-            <ul class="menu">
-                <li>
-                    <router-link to="/about">关于</router-link>
-                </li>
+            <ul class="menu-left">
+                <li><router-link to="/about">关于</router-link></li>
+                <li><router-link to="/admin">管理员</router-link></li>
             </ul>
-            <div class="username" v-if="admin">
-                admin
-                <img src="../assets/avatar.png" class="avatar" />
-            </div>
-            <div class="username" v-else-if="username">
-                {{username}}
-                <img v-bind:src="imgurl" class="avatar" />
+            <div class="menu-right" v-if="admin || username">
+                <div class="admin" v-if="admin">
+                    <a title="admin" href="/">
+                        <i class="demo-icon icon-github-circled"></i>
+                    </a>
+                </div>
+                <div class="user" v-else-if="username">
+                    <a :title="username" href="/" class="avatar">
+                        <img v-bind:src="imgurl" :title="username"/>
+                    </a>
+                </div>
+                <a href="/" class="lagout" @click="lagout">
+                    <i class="demo-icon icon-logout"></i>
+                </a>
             </div>
         </div>
         <div class="container">
@@ -72,7 +105,7 @@
 </template>
 <script>
 import axios from 'axios';
-import {getCookie} from '../lib/util.js';
+import {getCookie, deleteAllCookies} from '../lib/util.js';
 
 export default {
     data() {
@@ -115,6 +148,12 @@ export default {
             this.username = newData.username;
             this.imgurl = newData.imgurl;
             this.admin = newData.admin;
+        },
+        lagout() {
+            sessionStorage.clear();
+            deleteAllCookies();
+
+            location.href = '/';
         }
     }
 }
