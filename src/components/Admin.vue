@@ -35,10 +35,10 @@
                 width="120">
                 <template slot-scope="scope">
                     <el-button @click="reviewUser(scope.row)" type="text" size="small">查看</el-button>                    
-                    <el-button
+        <!--             <el-button
                         @click.native.prevent="deleteUser(scope.row)" type="text" size="small">
                         移除
-                    </el-button>
+                    </el-button> -->
                 </template>
             </el-table-column>
         </el-table>
