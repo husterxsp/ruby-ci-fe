@@ -35,10 +35,10 @@
                 width="120">
                 <template slot-scope="scope">
                     <el-button @click="reviewUser(scope.row)" type="text" size="small">查看</el-button>                    
-        <!--             <el-button
-                        @click.native.prevent="deleteUser(scope.row)" type="text" size="small">
+                    <el-button
+                        @click.native.prevent="delConfirm(scope.row)" type="text" size="small">
                         移除
-                    </el-button> -->
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -96,8 +96,39 @@ export default {
 
             this.$router.push({ path: '/profile/' + row.user_name});
         },
+        delConfirm(row) {
+            this.$confirm('确认删除', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.deleteUser(row);
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+        },
         deleteUser(row) {
-            console.log(row);
+            var _this = this;
+
+            var data = Qs.stringify({
+                usernames: row.user_name
+            });
+
+            axios.post(_global.host + '/users/delusers', data)
+            .then(function (res) {
+                console.log(res);
+                if (res.data.status == 1) {
+                    _this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+
+                    _this.userList.splice(row.index, 1);                    
+                }
+            });
         },
         getUsers() {
             var _this = this;
